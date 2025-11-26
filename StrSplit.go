@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func IsBrack(str string) bool {
 	runes := []rune(str)
 	bracket := 0
@@ -40,7 +42,10 @@ func StringPlitter(text []rune) []string {
 		}
 		if (nested == 0 || text[i] == '\n') && len(word) >= 2 {
 			newrunes := []rune(word[1 : len(word)-1])
-			if IsBrack(word) {
+			fmt.Println(word)
+			if IsValid(word) {
+				nestedSlice = append(nestedSlice, word)
+			} else if IsBrack(word) {
 				nestedSlice = StringPlitter(newrunes)
 			}
 			nested--

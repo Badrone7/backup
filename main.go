@@ -112,19 +112,18 @@ func main() {
 	txt := StringPlitter(text)
 	fmt.Println(strings.Join(txt, "||"))
 	final := []string{}
-	vld := 1
+	vld := 0
 	tempostr := ""
 	for i := 0; i < len(txt); i++ {
 		count := 0
 		if IsValid(txt[i]) {
-			fmt.Println(vld)
+			vld = 1
 			tempostr = Flagreplacer(txt[i])
-			if tempostr != ""{
+			if tempostr != "" {
 				final = append(final, tempostr)
-			}else {
-				vld++
+			} else if tempostr != "\n" {
+				vld--
 			}
-			fmt.Println(vld)
 			if txt[i] == "" {
 				continue
 			}
@@ -139,9 +138,8 @@ func main() {
 				continue
 			}
 			if IsBin(txt[i]) {
-				tempostr = Flagreplacer(txt[i])
 				if vld <= i {
-					final[i-vld] = Bin(final[i-vld])
+					final[len(final)-1-vld] = Bin(final[len(final)-1-vld])
 				}
 				continue
 			}
@@ -150,10 +148,9 @@ func main() {
 				if count == 0 {
 					continue
 				}
-				fmt.Println(":", vld)
 				if count == 1 {
 					if vld <= i {
-						final[i-vld] = Up(final[i-vld])
+						final[len(final)-1-vld] = Up(final[len(final)-1-vld])
 					}
 					continue
 				}
@@ -165,7 +162,7 @@ func main() {
 						if j-vld > i {
 							break
 						}
-						final[i-j-vld] = Up(final[i-j-vld])
+						final[len(final)-1-j-vld] = Up(final[len(final)-1-j-vld])
 					}
 				}
 				continue
@@ -177,7 +174,7 @@ func main() {
 				}
 				if count == 1 {
 					if vld <= i {
-						final[i-vld] = Low(final[i-vld])
+						final[len(final)-1-vld] = Low(final[len(final)-1-vld])
 					}
 					continue
 				}
@@ -189,7 +186,7 @@ func main() {
 						if j-vld > i {
 							break
 						}
-						final[i-j-vld] = Low(final[i-j-vld])
+						final[len(final)-1-j-vld] = Low(final[len(final)-1-j-vld])
 					}
 				}
 				continue
@@ -201,7 +198,7 @@ func main() {
 				}
 				if count == 1 {
 					if vld <= i && len(final) > 1 {
-						final[i-vld] = Cap(final[i-vld])
+						final[len(final)-1-vld] = Cap(final[len(final)-1-vld])
 					}
 					continue
 				}
@@ -213,7 +210,7 @@ func main() {
 						if j-vld > i {
 							break
 						}
-						final[i-j-vld] = Cap(final[i-j-vld])
+						final[len(final)-1-j-vld] = Cap(final[len(final)-1-j-vld])
 					}
 				}
 				continue
