@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
@@ -10,38 +9,12 @@ import (
 func Flagreplacer(str string) string {
 	tempstr := StringPlitter([]rune(str))
 	final := ""
-	fmt.Println(strings.Join(tempstr, "||"))
 	for i := 0; i < len(tempstr); i++ {
 		if IsValid(tempstr[i]) {
 			continue
 		}
 		final += tempstr[i]
 	}
-	// runes := []rune(str)
-	// final := ""
-	// found := false
-	// for i := 0; i < len(runes); i++ {
-	// 	if runes[i] == '(' {
-	// 		found = true
-	// 	}
-	// 	if found {
-	// 		if runes[i] == ')' {
-	// 			found = false
-	// 		}
-	// 		continue
-	// 	}
-	// 	final += string(runes[i])
-	// }
-	// onlyspace := true
-	// for _, ch := range final {
-	// 	if !IsSpaceExceptNewline(ch) {
-	// 		onlyspace = false
-	// 		break
-	// 	}
-	// }
-	// if onlyspace {
-	// 	final = ""
-	// }
 	return final
 }
 

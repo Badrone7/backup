@@ -26,6 +26,11 @@ func IsSuufix(str string) bool {
 	return re.MatchString(str)
 }
 
+func IsPrefix(str string) bool {
+	re := regexp.MustCompile(`^\((hex|bin|up|low|cap),?`)
+	return re.MatchString(str)
+}
+
 func StringPlitter(text []rune) []string {
 	words := []string{}
 	word := ""
@@ -34,12 +39,11 @@ func StringPlitter(text []rune) []string {
 	for i := 0; i < len(text); i++ {
 		if text[i] == '\n' {
 			if nested > 0 {
-				// Close any open parentheses when hitting newline
 				if word != "" {
 					words = append(words, word)
 					word = ""
 				}
-				nested = 0 // Reset nested counter
+				nested = 0
 			} else if word != "" {
 				words = append(words, word)
 				word = ""
@@ -52,7 +56,6 @@ func StringPlitter(text []rune) []string {
 		}
 		if text[i] == '(' {
 			if word != "" && word != "(" {
-				// Save the word before the parenthesis
 				words = append(words, word)
 				word = ""
 			}
@@ -91,7 +94,7 @@ func StringPlitter(text []rune) []string {
 	newwords := []string{}
 	// here we gonna merge any flags splitted
 	for i := 0; i < len(words); i++ {
-		if IsValid(words[i]) && (i+1) < len(words) && IsSuufix(words[i+1]) {
+		if IsPrefix(words[i]) && (i+1) < len(words) && IsSuufix(words[i+1]) {
 			newwords = append(newwords, words[i]+words[i+1])
 			i++
 			if (i+1) < len(words) && words[i+1] == "\n" {

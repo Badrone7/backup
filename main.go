@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
+	"regexp"
 )
 
 /*
@@ -87,15 +87,17 @@ func main() {
 	text := []rune(string(temptext))
 	tempstr := QuotesFixer(text)
 	tempstr = PonctuationFixer([]rune(tempstr))
+	spb := regexp.MustCompile(`\(`)
+	spa := regexp.MustCompile(`\)`)
+	tempstr = spb.ReplaceAllString(tempstr, " (")
+	tempstr = spa.ReplaceAllString(tempstr, ") ")
 	text = []rune(tempstr)
 	txt := StringPlitter(text)
-	fmt.Println(strings.Join(txt, "||"))
 	final := []string{}
 	tempostr := ""
 	for i := 0; i < len(txt); i++ {
 		count := 0
 		if IsValid(txt[i]) {
-			fmt.Println(txt[i])
 			tempostr = Flagreplacer(txt[i])
 			if txt[i] == "" {
 				continue
@@ -237,8 +239,12 @@ func main() {
 			if i-1 >= 0 && (text[i-1] >= 'a' && text[i-1] <= 'z') && (text[i-1] >= 'A' && text[i-1] <= 'Z') {
 				continue
 			}
-			if text[i+2] == 'a' || text[i+2] == 'e' || text[i+2] == 'i' || text[i+2] == 'o' || text[i+2] == 'u' || text[i+2] == 'A' || text[i+2] == 'E' || text[i+2] == 'I' || text[i+2] == 'O' || text[i+2] == 'U' {
-				FinalResult += "an "
+			if text[i+2] == 'a' || text[i+2] == 'e' || text[i+2] == 'i' || text[i+2] == 'o' || text[i+2] == 'u' || text[i+2] == 'A' || text[i+2] == 'E' || text[i+2] == 'I' || text[i+2] == 'O' || text[i+2] == 'U' || text[i+2] == 'H' || text[i+2] == 'h' {
+				if text[i] == 'A' {
+					FinalResult += "An "
+				} else {
+					FinalResult += "an "
+				}
 				i++
 				continue
 			}
