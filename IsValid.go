@@ -22,19 +22,19 @@ func IsBin(str string) bool {
 }
 
 func IsUp(str string) bool {
-	re := regexp.MustCompile(`\(up,\s*\d+\s*\)`)
-	de := regexp.MustCompile(`\(up\)$`)
+	re := regexp.MustCompile(`^\(up,\s*\d+\s*\)`)
+	de := regexp.MustCompile(`^\(up\)$`)
 	return re.MatchString(str) || de.MatchString(str)
 }
 
 func IsLow(str string) bool {
-	re := regexp.MustCompile(`^\(low,?`)
+	re := regexp.MustCompile(`^\(low,\s*\d+\s*\)`)
 	de := regexp.MustCompile(`^\(low\)`)
 	return re.MatchString(str) || de.MatchString(str)
 }
 
 func IsCap(str string) bool {
-	re := regexp.MustCompile(`^\(cap,?`)
+	re := regexp.MustCompile(`^\(cap,\s*\d+\s*\)`)
 	de := regexp.MustCompile(`^\(cap\)`)
 	return re.MatchString(str) || de.MatchString(str)
 }

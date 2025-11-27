@@ -84,134 +84,141 @@ func main() {
 			return
 		}
 	}
-	tempstr := string(temptext)
-	text := []rune(tempstr)
-	tempstr = ""
-	tempcount := 0
-	// here we are going to remove any extra newline or pace or tabulation
-	for i := 0; i < len(text); i++ {
-		if text[i] != ' ' && text[i] != '\t' && text[i] != '\r' && text[i] != '\n' {
-			tempstr += string(text[i])
-			tempcount = 0
-			continue
-		}
-		if tempcount == 0 {
-			tempstr += string(text[i])
-			tempcount++
-		}
-		if i == len(text)-1 && text[i] != '\n' {
-			tempstr += string(text[i])
-			tempstr += "\n"
-		}
-	}
+	text := []rune(string(temptext))
+	tempstr := QuotesFixer(text)
+	tempstr = PonctuationFixer([]rune(tempstr))
 	text = []rune(tempstr)
-	tempstr = ""
-	tempcount = 0
-	text = []rune(PonctuationFixer(text))
-	// here we are going to replace if necessary
 	txt := StringPlitter(text)
 	fmt.Println(strings.Join(txt, "||"))
 	final := []string{}
-	vld := 0
 	tempostr := ""
 	for i := 0; i < len(txt); i++ {
 		count := 0
 		if IsValid(txt[i]) {
-			vld = 1
+			fmt.Println(txt[i])
 			tempostr = Flagreplacer(txt[i])
-			if tempostr != "" {
-				final = append(final, tempostr)
-			} else if tempostr != "\n" {
-				vld--
-			}
 			if txt[i] == "" {
 				continue
 			}
-			if txt[i][len(txt[i])-1] == '\'' || txt[i][len(txt[i])-2] == '\'' {
-				final = append(final, "'")
-			}
 			// here we would do the transformation
 			if IsHex(txt[i]) {
-				if vld <= i {
-					final[len(final)-1-vld] = Hex(final[len(final)-1-vld])
+				if len(final) > 0 {
+					for j := len(final) - 1; j >= 0; j-- {
+						if !OnlySP(final[j]) {
+							final[j] = Hex(final[j])
+							break
+						}
+					}
+				}
+				if tempostr != "" {
+					final = append(final, tempostr)
 				}
 				continue
 			}
 			if IsBin(txt[i]) {
-				if vld <= i {
-					final[len(final)-1-vld] = Bin(final[len(final)-1-vld])
+				if len(final) > 0 {
+					for j := len(final) - 1; j >= 0; j-- {
+						if !OnlySP(final[j]) {
+							final[j] = Bin(final[j])
+							break
+						}
+					}
+				}
+				if tempostr != "" {
+					final = append(final, tempostr)
 				}
 				continue
 			}
 			if IsUp(txt[i]) {
 				count = Detect(txt[i])
 				if count == 0 {
-					continue
-				}
-				if count == 1 {
-					if vld <= i {
-						final[len(final)-1-vld] = Up(final[len(final)-1-vld])
+					if tempostr != "" {
+						final = append(final, tempostr)
 					}
 					continue
 				}
-				if len(final) > 0 {
-					if count > len(final) {
-						count = len(final)
+				wordsAvailable := len(final)
+				if wordsAvailable <= 0 {
+					if tempostr != "" {
+						final = append(final, tempostr)
 					}
-					for j := 0; j < count; j++ {
-						if j-vld > i {
-							break
-						}
-						final[len(final)-1-j-vld] = Up(final[len(final)-1-j-vld])
+					continue
+				}
+				if count > wordsAvailable {
+					count = wordsAvailable
+				}
+				wordsProcessed := 0
+				for j := 1; j <= len(final) && wordsProcessed < count; j++ {
+					idx := len(final) - j
+					if !OnlySP(final[idx]) && !NonValid(final[idx]) {
+						final[idx] = Up(final[idx])
+						wordsProcessed++
 					}
+				}
+				if tempostr != "" {
+					final = append(final, tempostr)
 				}
 				continue
 			}
 			if IsLow(txt[i]) {
 				count = Detect(txt[i])
 				if count == 0 {
-					continue
-				}
-				if count == 1 {
-					if vld <= i {
-						final[len(final)-1-vld] = Low(final[len(final)-1-vld])
+					if tempostr != "" {
+						final = append(final, tempostr)
 					}
 					continue
 				}
-				if len(final) > 0 {
-					if count > len(final) {
-						count = len(final)
+				wordsAvailable := len(final)
+				if wordsAvailable <= 0 {
+					if tempostr != "" {
+						final = append(final, tempostr)
 					}
-					for j := 0; j < count; j++ {
-						if j-vld > i {
-							break
-						}
-						final[len(final)-1-j-vld] = Low(final[len(final)-1-j-vld])
+					continue
+				}
+				if count > wordsAvailable {
+					count = wordsAvailable
+				}
+				wordsProcessed := 0
+				for j := 1; j <= len(final) && wordsProcessed < count; j++ {
+					idx := len(final) - j
+					if !OnlySP(final[idx]) && !NonValid(final[idx]) {
+						final[idx] = Low(final[idx])
+						wordsProcessed++
 					}
+				}
+				if tempostr != "" {
+					final = append(final, tempostr)
 				}
 				continue
 			}
 			if IsCap(txt[i]) {
 				count = Detect(txt[i])
 				if count == 0 {
-					continue
-				}
-				if count == 1 {
-					if vld <= i && len(final) > 1 {
-						final[len(final)-1-vld] = Cap(final[len(final)-1-vld])
+					if tempostr != "" {
+						final = append(final, tempostr)
 					}
 					continue
 				}
-				if len(final) > 0 {
-					if count > len(final) {
-						count = len(final)
+				wordsAvailable := len(final)
+				if wordsAvailable <= 0 {
+					if tempostr != "" {
+						final = append(final, tempostr)
 					}
-					for j := 0; j < count; j++ {
-						if j-vld > i {
-							break
-						}
-						final[len(final)-1-j-vld] = Cap(final[len(final)-1-j-vld])
+					continue
+				}
+				if count > wordsAvailable {
+					count = wordsAvailable
+				}
+				wordsProcessed := 0
+				for j := 1; j <= len(final) && wordsProcessed < count; j++ {
+					idx := len(final) - j
+					if !OnlySP(final[idx]) && !NonValid(final[idx]) {
+						final[idx] = Cap(final[idx])
+						wordsProcessed++
 					}
+				}
+				if tempostr != "" {
+					final = append(final, tempostr)
 				}
 				continue
 			}
@@ -238,9 +245,7 @@ func main() {
 		}
 		FinalResult += string(text[i])
 	}
-	// here we are going to process the quotes
 	FinalResult = QuotesFixer([]rune(FinalResult))
-	// here we are going to process the punctuations
 	FinalResult = PonctuationFixer([]rune(FinalResult))
 	err := os.WriteFile(os.Args[2], []byte(FinalResult), 0o644)
 	if err != nil {

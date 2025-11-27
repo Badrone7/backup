@@ -61,7 +61,20 @@ func OnlySP(str string) bool {
 	}
 	runes := []rune(str)
 	for i := 0; i < len(runes); i++ {
-		if !unicode.IsSpace(runes[i]) || runes[i] == '\n' {
+		if !unicode.IsSpace(runes[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func NonValid(str string) bool {
+	if str == "" {
+		return false
+	}
+	runes := []rune(str)
+	for i := 0; i < len(runes); i++ {
+		if unicode.IsLetter(runes[i]) || unicode.IsNumber(runes[i]) {
 			return false
 		}
 	}

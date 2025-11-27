@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"regexp"
+)
 
 func IsBrack(str string) bool {
 	runes := []rune(str)
@@ -19,16 +21,41 @@ func IsBrack(str string) bool {
 	return false
 }
 
+func IsSuufix(str string) bool {
+	re := regexp.MustCompile(`\s*\d+\s*\)`)
+	return re.MatchString(str)
+}
+
 func StringPlitter(text []rune) []string {
 	words := []string{}
 	word := ""
 	nested := 0
 	nestedSlice := []string{}
 	for i := 0; i < len(text); i++ {
-		if word == "" && (text[i] == ' ' || text[i] == '\t' || text[i] == '\n' || text[i] == '\r') {
+		if text[i] == '\n' {
+			if nested > 0 {
+				// Close any open parentheses when hitting newline
+				if word != "" {
+					words = append(words, word)
+					word = ""
+				}
+				nested = 0 // Reset nested counter
+			} else if word != "" {
+				words = append(words, word)
+				word = ""
+			}
+			words = append(words, "\n")
+			continue
+		}
+		if word == "" && (text[i] == ' ' || text[i] == '\t' || text[i] == '\r') {
 			continue
 		}
 		if text[i] == '(' {
+			if word != "" && word != "(" {
+				// Save the word before the parenthesis
+				words = append(words, word)
+				word = ""
+			}
 			word += string(text[i])
 			nested++
 			continue
@@ -40,14 +67,9 @@ func StringPlitter(text []rune) []string {
 			word += string(text[i])
 			continue
 		}
-		if (nested == 0 || text[i] == '\n') && len(word) >= 2 {
+		if nested == 0 && len(word) >= 2 {
 			newrunes := []rune(word[1 : len(word)-1])
-			fmt.Println(word)
-			if IsValid(word) {
-				nestedSlice = append(nestedSlice, word)
-			} else if IsBrack(word) {
-				nestedSlice = StringPlitter(newrunes)
-			}
+			nestedSlice = StringPlitter(newrunes)
 			nested--
 		}
 		if len(nestedSlice) != 0 {
@@ -66,52 +88,43 @@ func StringPlitter(text []rune) []string {
 	if word != "" {
 		words = append(words, word)
 	}
+	newwords := []string{}
+	// here we gonna merge any flags splitted
+	for i := 0; i < len(words); i++ {
+		if IsValid(words[i]) && (i+1) < len(words) && IsSuufix(words[i+1]) {
+			newwords = append(newwords, words[i]+words[i+1])
+			i++
+			if (i+1) < len(words) && words[i+1] == "\n" {
+				newwords = append(newwords, "\n")
+				i++
+			}
+			continue
+		}
+		newwords = append(newwords, words[i])
+	}
+	words = []string{}
+	for i := 0; i < len(newwords); i++ {
+		if !OnlySP(newwords[i]) {
+			words = append(words, newwords[i])
+		} else {
+			if len(words) == 0 || words[len(words)-1] == "" {
+				words = append(words, newwords[i])
+				continue
+			}
+			j := i
+			total := newwords[j]
+			for {
+				if j+1 >= len(newwords) || !OnlySP(newwords[j+1]) {
+					break
+				}
+				if OnlySP(newwords[j+1]) {
+					total += newwords[j+1]
+				}
+				j++
+			}
+			words = append(words, total)
+			i = j
+		}
+	}
 	return words
 }
-
-// func StringPlitter(text []rune) []string {
-// 	words := []string{}
-// 	word := ""
-// 	count := 0
-// 	for i := 0; i < len(text); i++ {
-// 		if word == "" && (text[i] == ' ' || text[i] == '\t' || text[i] == '\n' || text[i] == '\r') {
-// 			continue
-// 		}
-// 		if text[i] == '(' {
-// 			word += string(text[i])
-// 			count = 1
-// 			continue
-// 		}
-// 		if count == 1 {
-// 			if text[i] == '(' {
-// 				word += string(text[i])
-// 				if word != "" {
-// 					words = append(words, word)
-// 					word = ""
-// 				}
-// 				count = 1
-// 				continue
-// 			}
-// 			if text[i] == ')' {
-// 				word += string(text[i])
-// 				count = 0
-// 				continue
-// 			}
-// 			word += string(text[i])
-// 			continue
-// 		}
-// 		if text[i] != ' ' && text[i] != '\t' && text[i] != '\n' && text[i] != '\r' {
-// 			word += string(text[i])
-// 			continue
-// 		}
-// 		word += string(text[i])
-// 		if word != "" {
-// 			words = append(words, word)
-// 			word = ""
-// 		}
-// 	}
-// 	if word != "" {
-// 		words = append(words, word)
-// 	}
-// 	return words
-// }
