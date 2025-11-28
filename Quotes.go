@@ -28,13 +28,13 @@ func QuotesFixer(text []rune) string {
 					continue
 				}
 				if IsPonc(text[i-1]) || IsQuote(text[i-1]) {
-					if IsQuote(text[i-1]) && text[i-1]!='\n'{
-						temprune=append(temprune,' ')
+					if IsQuote(text[i-1]) && text[i-1] != '\n' {
+						temprune = append(temprune, ' ')
 					}
 					temprune = append(temprune, text[i])
 					foundsingle++
 				} else {
-					if !IsSp(text[i-1]) && !IsPonc(text[i-1]) && !IsQuote(text[i-1]) {
+					if !IsSp(text[i-1]) && !IsPonc(text[i-1]) && !IsQuote(text[i-1]) && text[i-1] != '\n' {
 						temprune = append(temprune, ' ')
 					}
 					temprune = append(temprune, text[i])
@@ -63,7 +63,7 @@ func QuotesFixer(text []rune) string {
 				}
 				if i+1 < len(text) && (IsPonc(text[i+1]) || IsSp(text[i+1]) || IsQuote(text[i+1]) || text[i] == '\n') {
 					if i+2 < len(text) && IsSp(text[i+1]) && IsQuote(text[i+1]) {
-						temprune = append(temprune,' ')
+						temprune = append(temprune, ' ')
 						i++
 					}
 					continue

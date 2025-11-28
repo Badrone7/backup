@@ -51,7 +51,7 @@ func StringPlitter(text []rune) []string {
 			words = append(words, "\n")
 			continue
 		}
-		if word == "" && (text[i] == ' ' || text[i] == '\t' || text[i] == '\r') {
+		if word == "" && (text[i] == ' ' || text[i] == '\r') {
 			continue
 		}
 		if text[i] == '(' {
